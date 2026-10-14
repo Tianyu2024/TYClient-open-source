@@ -1,0 +1,69 @@
+package cn.tianyu.client.Manager;
+
+import cn.tianyu.client.Manager.impl.Friend;
+import cn.tianyu.client.util.impl.client.DebugUtil;
+import joptsimple.internal.Strings;
+import lombok.Getter;
+import net.minecraft.entity.player.EntityPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Author: CN_tianyu
+ */
+@Getter
+public class FriendManager {
+    private final List<Friend> friends = new ArrayList<>();
+
+
+    public void add(final String name) {
+        this.add(name, name);
+    }
+
+    public void remove(final String name) {
+        for (final Friend friend : this.friends) {
+            if (friend.getUsername().equalsIgnoreCase(name)) {
+                this.friends.remove(friend);
+                break;
+            }
+        }
+    }
+
+    public void add(final String name, final String alias) {
+        this.friends.add(new Friend(name, alias));
+    }
+
+    public String getFriendsName() {
+        final ArrayList<String> list = new ArrayList<>();
+        for (final Friend friend : this.friends) {
+            list.add(friend.getUsername());
+        }
+        return Strings.join(list.toArray(new String[0]), "");
+    }
+
+    public boolean isFriend(final String name) {
+        for (final Friend friend : this.friends) {
+            if (friend.getUsername().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void toggle(final String name) {
+        for (final Friend friend : this.friends) {
+            if (!this.isFriend(name)) {
+                this.friends.add(friend);
+                DebugUtil.log(name + " friended");
+            } else {
+                this.friends.removeIf(friend::equals);
+                DebugUtil.log(name + " unfriended");
+            }
+        }
+    }
+
+    public boolean isFriend(final EntityPlayer player) {
+        return this.isFriend(player.getGameProfile().getName());
+    }
+}
